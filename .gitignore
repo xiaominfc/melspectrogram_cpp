@@ -2,6 +2,7 @@
 *.swp
 *.DS_Store
 *.o
+*.a
 *.so
 *.dylib
 mels_a_file
