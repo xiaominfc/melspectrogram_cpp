@@ -1,0 +1,7 @@
+*.dSYM
+*.swp
+*.DS_Store
+*.o
+*.so
+*.dylib
+mels_a_file
