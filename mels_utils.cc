@@ -102,7 +102,7 @@ void pad_data(SubVector<BaseFloat> &data, int hop_length,Vector<double64>& outDa
 		if(i > 0 && i <=hop_length) {
 			outData.Data()[hop_length-i] = v;
 		}
-		if(i >= end && i < len - 1) {
+		if(i > end && i < len - 1) {
 			int index = len * 2 - i - 2 + hop_length;
 			outData.Data()[index] = v;
 		} 
