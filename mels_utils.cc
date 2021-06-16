@@ -51,7 +51,7 @@ void filters_mel(float sr,uint n_fft,uint n_mels,float fmin,float fmax, Matrix<d
 			double upper = (up_hz -offset_hz*j) / (up_hz - mels(i-1));
 			double min  = lower < upper? lower:upper;
 			min = min > 0?min:0.0;
-      		mel_basis(i-2,j) = min*2.0/ (up_hz-down_hz);
+			mel_basis(i-2,j) = min*2.0/ (up_hz-down_hz);
 		}
 	}
 }
@@ -152,10 +152,9 @@ void melspectrogram(SubVector<BaseFloat> &data,float sr,uint n_fft,uint hop_leng
 			}
 			CFFT::Forward(pSignal,N);
 			for(uint j = 0; j < fft_result.NumRows(); j ++) {
-				//double v = sqrt(pSignal[j].norm);
-				//fft_result(j,i) = pow(v,2.0);
-
-				fft_result(j,i) = pSignal[j].norm();
+				double v = sqrt(pSignal[j].norm);
+				fft_result(j,i) = pow(v,2.0);
+				//fft_result(j,i) = pSignal[j].norm();
 			}
 		}
 		delete[] pSignal;
