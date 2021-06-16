@@ -6,7 +6,7 @@
  */
 
 #include "mels_utils.h"
-
+#include "api/api.h"
 
 double hz_to_mel(double frequencies){
 	double mels = (frequencies - MIN_F) / FSP;
@@ -123,16 +123,42 @@ void melspectrogram(SubVector<BaseFloat> &data,float sr,uint n_fft,uint hop_leng
 	frames.MulRowsVec(window);
 	Matrix<double64> fft_result;
 	fft_result.Resize(half_n_fft + 1,frames.NumCols());
-	complex *pSignal = new complex[frames.NumRows()];
-	for(int i = 0; i < frames.NumCols(); i ++) {
-		for(int j = 0; j < frames.NumRows();j++) {
-			pSignal[j] = frames(j,i);
+	const uint N = frames.NumRows();
+	if(N & N-1){
+		printf("use fftw for %d examples\n",N);
+		double* din = (double*)fftw_malloc(sizeof(double) * N);
+		fftw_plan p;
+		fftw_complex* out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
+		for(uint i = 0; i < frames.NumCols(); i ++) {
+			for(uint j = 0; j < N;j++) {
+				din[j] = frames(j,i);
+			}
+			p = fftw_plan_dft_r2c_1d(N, din, out, FFTW_ESTIMATE);
+			fftw_execute(p);
+			for(uint j = 0; j < fft_result.NumRows(); j ++) {
+				double v = sqrt(out[j][0] * out[j][0] +out[j][1] * out[j][1]);
+				fft_result(j,i) = pow(v,2.0);	
+			}
+			fftw_destroy_plan(p);
 		}
-		CFFT::Forward(pSignal,n_fft);
-		for(int j = 0; j < fft_result.NumRows(); j ++) {
-			double v = sqrt(pSignal[j].re()*pSignal[j].re()+pSignal[j].im()*pSignal[j].im());
-			fft_result(j,i) = pow(v,2.0);
+		fftw_free(din);
+		fftw_free(out);
+	}else {
+		//fftw有点大 故保留旧版本实现 对于2的N次幂样本数的计算 可以考虑移除fftw
+		complex *pSignal = new complex[N];
+		for(uint i = 0; i < frames.NumCols(); i ++) {
+			for(uint j = 0; j < N;j++) {
+				pSignal[j] = frames(j,i);
+			}
+			CFFT::Forward(pSignal,N);
+			for(uint j = 0; j < fft_result.NumRows(); j ++) {
+				//double v = sqrt(pSignal[j].norm);
+				//fft_result(j,i) = pow(v,2.0);
+
+				fft_result(j,i) = pSignal[j].norm();
+			}
 		}
+		delete[] pSignal;
 	}
 
 	result.Resize(fft_result.NumCols(),mel_basis.NumRows());

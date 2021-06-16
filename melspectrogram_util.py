@@ -219,7 +219,7 @@ def stft(y, n_fft=2048, hop_length=None, win_length=None, window='hann',
 
 
 def melspectrogram(y=None, sr=22050, S=None, n_fft=2048, hop_length=512,power=2.0, **kwargs):
-    S = stft(y,n_fft=1024,hop_length=hop_length)
+    S = stft(y,n_fft=n_fft,hop_length=hop_length)
     S = np.abs(S)**power
     mel_basis = filters_mel(sr,n_fft=n_fft,**kwargs)
     return np.dot(mel_basis, S)
@@ -231,11 +231,12 @@ if __name__ == '__main__':
     import librosa
     #y, sr = librosa.load('./5016672465406.wav',sr=None)
     y, sr = librosa.load('./6983123609037.wav',sr=None)
-    n_fft = 1024
+    #n_fft = 1024
+    n_fft = 800
     mels = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=80,fmax=8000,n_fft=n_fft)
-    print(mels.T)
+    print(mels.T[0])
     print("=============")
-    print(melspectrogram(y,sr=sr,n_fft=n_fft,n_mels=80,fmax=8000).T)
+    print(melspectrogram(y,sr=sr,n_fft=n_fft,n_mels=80,fmax=8000).T[0])
 
 
 

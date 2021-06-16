@@ -11,9 +11,24 @@
 cd ${kaldi_project_path}/src
 git clone https://github.com/xiaominfc/melspectrogram_cpp
 cd melspectrogram_cpp
-make
+
+#为了兼容 任意长度的fft 所以依赖fftw
+
+wget http://www.fftw.org/fftw-3.3.9.tar.gz
+tar -xf fftw-3.3.9.tar.gz
+cd fftw-3.3.9
+./configure
+make -j 4
+
+cd ..
+#编译 fftw结束
+
+make -j 4
 
 ```
+
+
+
 
 ## 测试
 

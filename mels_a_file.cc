@@ -29,17 +29,19 @@ int main(int argc, char* argv[]){
 			po.PrintUsage();
 			exit(1);
 		}
-		size_t N = 1024;
+		
 		std::string wavpath = po.GetArg(1);
 		std::ifstream is(wavpath, std::ios_base::binary);
 		WaveData wave;
 		wave.Read(is);
 		SubVector<BaseFloat> waveform(wave.Data(), 0);
 		float sr = wave.SampFreq();
-    Matrix<double64> result;
+		Matrix<double64> result;
+		//const uint N = 1024;
+		const uint N = 800;
 		melspectrogram(waveform,sr,N,512,80,result);
 	  
-    //只打印第一行
+		//只打印第一行
 		for(int i = 0; i < 80; i++) {
 			printf("%0.10e\n",result(0,i));
 		}

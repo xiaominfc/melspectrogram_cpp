@@ -6,3 +6,5 @@
 *.so
 *.dylib
 mels_a_file
+fftw-3.3.9
+fftw-3.3.9.tar.gz
