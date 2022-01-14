@@ -7,6 +7,7 @@
 
 #include "mels_utils.h"
 #include "api/api.h"
+//#include <math.h>
 
 double hz_to_mel(double frequencies){
 	double mels = (frequencies - MIN_F) / FSP;
@@ -152,7 +153,8 @@ void melspectrogram(SubVector<BaseFloat> &data,float sr,uint n_fft,uint hop_leng
 			}
 			CFFT::Forward(pSignal,N);
 			for(uint j = 0; j < fft_result.NumRows(); j ++) {
-				double v = sqrt(pSignal[j].norm);
+				double norm = pSignal[j].norm();
+				double v = sqrt(norm);
 				fft_result(j,i) = pow(v,2.0);
 				//fft_result(j,i) = pSignal[j].norm();
 			}
